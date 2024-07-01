@@ -11,16 +11,19 @@ public class TextFileHandler {
         }
     }
 
-    public static String readTextFile(String fileName) throws IOException {
-        StringBuilder content = new StringBuilder();
-        try (FileReader reader = new FileReader(fileName)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                content.append(line).append("\n");
-            }
+    public static void readTextFile(String fileName) throws IOException {
+        FileReader fr = new FileReader(fileName);
+
+        BufferedReader br = new BufferedReader(fr);
+        String line;
+
+        // Đọc từng dòng trong file
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
         }
-        return content.toString().trim();
+        // Đóng file
+        br.close();
+        fr.close();
     }
 
     public static void main(String[] args) throws IOException {
@@ -28,9 +31,6 @@ public class TextFileHandler {
         String content = "Write write write.";
         writeTextFile("text_data.txt", content);
 
-        String readContent = readTextFile("text_data.txt");
-        
-        System.out.println("Read content:");
-        System.out.println(readContent);
+        readTextFile("text_data.txt");
     }
 }
