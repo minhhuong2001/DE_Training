@@ -24,14 +24,12 @@ public class TextFileHandler {
     }
 
     public static void main(String[] args) throws IOException {
-        // Example usage: Write text content to a file
+
         String content = "Write write write.";
         writeTextFile("text_data.txt", content);
 
-        // Read the text file content
         String readContent = readTextFile("text_data.txt");
-
-        // Print the read content
+        
         System.out.println("Read content:");
         System.out.println(readContent);
     }

@@ -20,14 +20,12 @@ public class BinaryFileHandler {
     }
 
     public static void main(String[] args) throws IOException {
-        // Example usage: Write a byte array to a binary file
-        byte[] data = { 0x6F, 0x25, 0x1C, 0x3F }; // Sample byte array
+
+        byte[] data = { 0x6F, 0x25, 0x1C, 0x3F }; 
         writeBinaryFile("binary_data.dat", data);
 
-        // Read the binary file back into a byte array
         byte[] readData = readBinaryFile("binary_data.dat");
 
-        // Print the read bytes (may not be human-readable)
         System.out.println("Read bytes:");
         for (byte b : readData) {
             System.out.print(b + " ");
