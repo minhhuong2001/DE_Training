@@ -40,15 +40,43 @@ Nếu chúng ta chạy chương trình ghi đè đầy đủ phương thức `ha
 ## 2. Design Pattern
 ### 2.1 Singleton
 Singleton đảm bảo chỉ duy nhất một thể hiện (instance) được tạo ra và nó sẽ cung cấp cho bạn một method để có thể truy xuất được thể hiện duy nhất đó mọi lúc mọi nơi trong chương trình
+![alt text](img1.png)
 Sử dụng Singleton khi chúng ta muốn:
 - Đảm bảo rằng chỉ có một instance của lớp.
 - Việc quản lý việc truy cập tốt hơn vì chỉ có một thể hiện duy nhất.
 - Có thể quản lý số lượng thể hiện của một lớp trong giớn hạn chỉ định.
-### 2.2 Decorator
+![alt text](img4.png)
+### 2.2 Decoratorg
 Decorator pattern là một trong những Pattern thuộc nhóm cấu trúc (Structural Pattern). Nó cho phép người dùng thêm chức năng mới vào đối tượng hiện tại mà không muốn ảnh hưởng đến các đối tượng khác. Kiểu thiết kế này có cấu trúc hoạt động như một lớp bao bọc (wrap) cho lớp hiện có. Mỗi khi cần thêm tính năng mới, đối tượng hiện có được wrap trong một đối tượng mới (decorator class).
 Decorator pattern sử dụng composition thay vì inheritance (thừa kế) để mở rộng đối tượng.
+![alt text](img2.png)
 ### 2.3 Strategy
 Strategy Pattern là một trong những Pattern thuộc nhóm hành vi (Behavior Pattern). Nó cho phép định nghĩa tập hợp các thuật toán, đóng gói từng thuật toán lại, và dễ dàng thay đổi linh hoạt các thuật toán bên trong object. Strategy cho phép thuật toán biến đổi độc lập khi người dùng sử dụng chúng.
 Strategy Pattern giúp tách rời phần xử lý một chức năng cụ thể ra khỏi đối tượng. Sau đó tạo ra một tập hợp các thuật toán để xử lý chức năng đó và lựa chọn thuật toán nào mà chúng ta thấy đúng đắn nhất khi thực thi chương trình. Mẫu thiết kế này thường được sử dụng để thay thế cho sự kế thừa, khi muốn chấm dứt việc theo dõi và chỉnh sửa một chức năng qua nhiều lớp con.
+![alt text](img3.png)
 ## 3.Senalize
+Serialization là quá trình chuyển đổi trạng thái của một đối tượng Java thành một luồng byte, cho phép lưu trữ đối tượng ở bất kỳ đâu và sử dụng bởi một tiến trình khác. Quá trình ngược lại gọi là deserialization, nơi luồng byte được chuyển đổi trở lại thành đối tượng Java.
 
+Quan hệ IS-A và HAS-A:
+- IS-A: Nếu một lớp implement giao diện Serializable, tất cả các lớp con của nó cũng sẽ được serializable.
+- HAS-A: Nếu một lớp có tham chiếu đến một lớp khác, thì cả hai lớp đều cần implement giao diện Serializable.
+
+Để thực hiện serialization, lớp của bạn cần implements giao diện java.io.Serializable. Giao diện này không có phương thức nào, nó chỉ đóng vai trò là một marker để cho JVM biết rằng lớp có thể được serialize.
+```
+class Person implements Serializable {
+....
+}
+```
+Để serialize một đối tượng:
+- Tạo một đối tượng ObjectOutputStream.
+- Gọi phương thức writeObject() của ObjectOutputStream và truyền đối tượng cần serialize vào.
+- Đóng ObjectOutputStream.
+```
+try (FileOutputStream fos = new FileOutputStream("person.dat");
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            Person person = new Person("John Doe", 30);
+            oos.writeObject(person);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+```
