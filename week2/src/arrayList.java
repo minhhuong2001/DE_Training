@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArrayList {
+public class arrayList {
     public static void main(String[] args) {
         // Khởi tạo một ArrayList
         List<String> myList = new ArrayList<>();

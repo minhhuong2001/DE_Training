@@ -1,7 +1,7 @@
 import java.util.HashSet;
 import java.util.Set;
 
-public class HashSet{
+public class hashSet{
     public static void main(String[] args) {
         // Khởi tạo một HashSet
         Set<String> myHashSet = new HashSet<>();

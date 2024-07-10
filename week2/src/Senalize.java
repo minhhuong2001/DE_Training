@@ -35,6 +35,13 @@ public class Senalize {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        try (FileInputStream fis = new FileInputStream("person.dat");
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            Person person = (Person) ois.readObject();
+            System.out.println(person.getName() + ", " + person.getAge());
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 }

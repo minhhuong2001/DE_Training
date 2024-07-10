@@ -1,7 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class HashMap {
+public class hashMap {
     public static void main(String[] args) {
         // Khởi tạo một HashMap
         Map<String, Integer> myHashMap = new HashMap<>();
