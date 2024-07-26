@@ -7,10 +7,14 @@ Các lý do xảy ra Exception
 - Mất kết nối mạng
 - Một file cần được mở nhưng không thể tìm thấy.
 - Out-of-disk memory
+
 ![alt text](img1.png)
+
 Error(lỗi) thể hiện cho các trường hợp không thể khắc phục như JVM hết bộ nhớ, tràn bộ nhớ, stack over flow, v.v
 Có 2 loại exception: checked và unchecked. Tất cả các checked exception được kế thừa từ lớp Exception ngoại trừ lớp RuntimeException. RuntimeException là lớp cơ sở của tất cả các lớp unchecked exception. 
+
 ![alt text](img2.png)
+
 ### Checked exceptions
 Là loại exception xảy ra trong lúc compile time, nó cũng có thể được gọi là compile time exceptions. Loại exception này không thể bỏ qua được trong quá trình compile, bắt buộc ta phải handle nó.
 Ví dụ:
@@ -52,7 +56,9 @@ try {
 ## 2. Concurrency
 ### Thread
 Luồng (thread) trong Java là một đơn vị xử lý độc lập trong chương trình, cho phép thực hiện đa luồng (multithreading) để cải thiện hiệu suất và tận dụng tối đa tài nguyên máy tính. Mỗi luồng là một dòng thực thi độc lập trong chương trình, có thể chạy song song với các luồng khác
+
 ![alt text](img3.png)
+
 - New
 
 Khi một Thread mới được khởi tạo nhưng chưa bắt đầu chạy, nó ở trạng thái “New”. Ở trạng thái này, Thread chưa được liên kết với hệ thống phân bổ tài nguyên, và chưa được đưa vào hàng đợi CPU. Để bắt đầu chạy một luồng mới, bạn cần gọi phương thức start() của Thread đó.
@@ -133,6 +139,36 @@ System.out.println(“Thread đang chạy”);
 }
 
 ```
+### Các khái niệm
+1. Đa nhiệm ưu tiên(preempetive multitasking)
+
+Hệ điều hành có thể bắt đầu chuyển ngữ cảnh từ tiến trình đang chạy sang tiến trình khác. Nói cách khác, hệ điều hành cho phép dừng việc thực thi tiến trình hiện đang chạy và phân bổ CPU cho một số tiến trình khác. HĐH sử dụng một số tiêu chí để quyết định thời gian một tiến trình sẽ thực thi trước khi cho phép một tiến trình khác sử dụng hệ điều hành. Cơ chế lấy quyền kiểm soát hệ điều hành từ một tiến trình và trao nó cho một tiến trình khác được gọi là quyền ưu tiên
+
+2. Đa nhiệm hợp tác(cooperative multitasking)
+
+Hệ điều hành không bao giờ bắt đầu chuyển ngữ cảnh từ tiến trình đang chạy sang tiến trình khác. Chuyển đổi ngữ cảnh chỉ xảy ra khi các tiến trình tự nguyện nhường quyền kiểm soát theo định kỳ hoặc khi không hoạt động hoặc bị chặn theo logic để cho phép nhiều ứng dụng thực thi đồng thời. Ngoài ra, trong đa nhiệm này, tất cả các quy trình đều hợp tác để sơ đồ lập lịch hoạt động.
+
+Hệ điều hành chỉ điều phối task vào cac tài nguyên đang rảnh, các task sẽ tự quản lý vòng đời của chúng.
+
+|   |                                                                 Đa nhiệm ưu tiên                                                                 |                                                                             Đa nhiệm hợp tác                                                                            |
+|:-:|:------------------------------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| 1 | Đa  nhiệm ưu tiên là một tác vụ được HĐH sử dụng để quyết định thời gian  thực hiện một tác vụ trước khi cho phép một tác vụ khác sử dụng HĐH.   | Đa  nhiệm hợp tác là một loại đa nhiệm máy tính trong đó hệ điều hành không  bao giờ bắt đầu chuyển đổi ngữ cảnh từ một tiến trình đang chạy sang  một tiến trình khác. |
+| 2 | Nó làm gián đoạn các ứng dụng và trao quyền kiểm soát cho các quy trình khác ngoài tầm kiểm soát của ứng dụng.                                   | Trong đa nhiệm hợp tác, bộ lập lịch quy trình không bao giờ làm gián đoạn một quy trình một cách bất ngờ.                                                               |
+| 3 | Hệ điều hành có thể bắt đầu chuyển đổi ngữ cảnh từ một tiến trình đang chạy sang một tiến trình khác.                                            | Hệ điều hành không bắt đầu chuyển đổi ngữ cảnh từ một tiến trình đang chạy sang một tiến trình khác.                                                                    |
+| 4 | Một  chương trình độc hại bắt đầu một vòng lặp vô hạn, nó chỉ gây tổn hại  cho chính nó mà không ảnh hưởng đến các chương trình hoặc luồng khác. | Một  chương trình độc hại có thể khiến toàn bộ hệ thống ngừng hoạt động do  bận chờ đợi hoặc chạy một vòng lặp vô hạn và không từ bỏ quyền kiểm  soát.                  |
+| 5 | Đa nhiệm ưu tiên buộc các ứng dụng phải chia sẻ CPU dù muốn hay không.                                                                           | Trong  đa nhiệm hợp tác, tất cả các chương trình phải hợp tác để nó hoạt động.  Nếu một chương trình không hợp tác, nó có thể chiếm CPU.                                |
+
+3. Deadlock
+Xảy ra khi hai hoặc nhiều luồng khong thể thực thi do tài nguyên phụ thuộc lần nhau, tài nguyên cần của luồng 1 giữ bởi luồng 2, tài nguyên cần của luồng 2 lại giữ ở luồng 1
+
+4. Liveness
+5. livelock
+6. Starvation
+một vài policy cần thiết để quyết định xem có nhận được tài nguyên khi xay ra tiến trình, vì lí do đó dẫn đến một vài tiến trình không nhận được tài nguyên mặc dù không xảy ra deadlock
+7. Synchorous
+
+8. Asynchronous là chương trình không
+
 ### ThreadPool
 ThreadPool là một tập hợp các luồng làm việc (worker threads) được tạo ra trước và sẵn sàng xử lý các tác vụ. Điều này giúp giảm thiểu chi phí liên quan đến việc tạo và hủy luồng. ThreadPool cho phép  quản lý hiệu quả số lượng luồng đang hoạt động trong ứng dụng và tự động điều chỉnh chúng để đáp ứng nhu cầu.
 Ví dụ: 
