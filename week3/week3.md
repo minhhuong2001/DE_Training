@@ -15,7 +15,7 @@ Có 2 loại exception: checked và unchecked. Tất cả các checked exception
 
 ![alt text](img2.png)
 
-### Checked exceptions
+### 1.1 Checked exceptions
 Là loại exception xảy ra trong lúc compile time, nó cũng có thể được gọi là compile time exceptions. Loại exception này không thể bỏ qua được trong quá trình compile, bắt buộc ta phải handle nó.
 Ví dụ:
 ```
@@ -34,7 +34,7 @@ try {
         }
 ```
 phương thức FileReader() có thể ném ra ngoại lệ FileNotFoundException nếu file không được tìm thấy, hoặc IOException nếu có lỗi xảy ra khi đọc file.
-### UnChecked exceptions
+### 1.2 UnChecked exceptions
 
 Là loại exception xảy ra tại thời điểm thực thi chương trình, nó cũng có thể gọi là runtime exceptions đó là programming bugs, lỗi logic của chương trình… Loại exception này được bỏ qua trong quá trình compile, không bắt buộc ta phải handle nó
 Ví dụ:
@@ -54,7 +54,7 @@ try {
   }
 ```
 ## 2. Concurrency
-### Thread
+### 2.1 Thread
 Luồng (thread) trong Java là một đơn vị xử lý độc lập trong chương trình, cho phép thực hiện đa luồng (multithreading) để cải thiện hiệu suất và tận dụng tối đa tài nguyên máy tính. Mỗi luồng là một dòng thực thi độc lập trong chương trình, có thể chạy song song với các luồng khác
 
 ![alt text](img3.png)
@@ -139,16 +139,101 @@ System.out.println(“Thread đang chạy”);
 }
 
 ```
-### Các khái niệm
-1. Đa nhiệm ưu tiên(preempetive multitasking)
+### 2.2 Synchonized
+
+Trong lập trình đa luồng, đồng bộ hóa (synchronization) là một cơ chế đảm bảo rằng chỉ có một luồng duy nhất được phép truy cập vào một tài nguyên chia sẻ tại một thời điểm. Điều này đặc biệt quan trọng khi nhiều luồng cùng truy cập vào cùng một dữ liệu, giúp tránh các tình huống đua (race condition) và đảm bảo tính toàn vẹn của dữ liệu.
+
+
+Java cung cấp từ khóa synchronized để thực hiện đồng bộ hóa. Khi một khối mã được đánh dấu là synchronized, chỉ có một luồng duy nhất có thể thực thi khối mã đó tại một thời điểm.
+
+
+Synchronized method:
+```Java
+
+    public synchronized void method() {
+        // Mã cần đồng bộ hóa
+    }
+    
+```
+Khi một phương thức được đánh dấu là synchronized, toàn bộ phương thức sẽ trở thành một đoạn găng.
+
+Synchronized block:
+```Java
+
+public void method() {
+synchronized(this) {
+// Mã cần đồng bộ hóa
+}
+}
+```
+
+Với synchronized block, bạn có thể chỉ đồng bộ hóa một phần của phương thức, giúp tăng hiệu suất. Đối tượng được truyền vào synchronized sẽ đóng vai trò là khóa (lock) để bảo vệ đoạn mã.
+
+Cơ chế hoạt động
+- Khóa (lock): Khi một luồng thực thi vào một khối mã synchronized, nó sẽ cố gắng lấy khóa tương ứng.
+- Nếu khóa đang rảnh: Luồng sẽ lấy được khóa và thực thi khối mã.
+- Nếu khóa đang bị luồng khác giữ: Luồng hiện tại sẽ bị chặn cho đến khi khóa được trả lại.
+- Khi luồng hoàn thành: Nó sẽ trả lại khóa, cho phép các luồng khác lấy khóa và thực thi.
+
+Ví dụ
+```Java
+
+public class Counter {
+private int count = 0;
+
+    public synchronized void increment() {
+        count++;
+    }
+}
+```
+Trong ví dụ trên, phương thức increment() được đồng bộ hóa, đảm bảo rằng chỉ có một luồng có thể tăng giá trị của biến count tại một thời điểm, tránh tình trạng nhiều luồng cùng tăng và dẫn đến kết quả sai.
+
+Ưu điểm và nhược điểm
+
+    Ưu điểm:
+        Đảm bảo tính toàn vẹn của dữ liệu.
+        Dễ sử dụng và hiểu.
+    Nhược điểm:
+        Hiệu suất: Đồng bộ hóa có thể làm giảm hiệu suất của chương trình, đặc biệt khi có nhiều luồng tranh giành tài nguyên.
+        Deadlock: Nếu các luồng lấy khóa theo thứ tự khác nhau, có thể dẫn đến deadlock.
+        Livelock: Các luồng liên tục thay đổi trạng thái nhưng không tiến gần hơn đến trạng thái hoàn thành.
+
+Lưu ý:
+- Chọn đối tượng khóa: Đối tượng được truyền vào synchronized đóng vai trò quan trọng. Nên chọn đối tượng sao cho các luồng muốn đồng bộ hóa cùng truy cập đến đối tượng đó.
+- Tránh khóa lồng nhau: Việc lồng quá nhiều khối synchronized có thể dẫn đến deadlock.
+- Thời gian giữ khóa ngắn: Nên giữ khóa trong thời gian ngắn nhất có thể để tăng khả năng sử dụng đồng thời.
+
+####  Critical section (đoạn găng)
+Đoạn găng (critical section) là một đoạn mã truy cập vào các tài nguyên chia sẻ. Để đảm bảo tính nhất quán của dữ liệu và tránh các tình huống đua (race condition), chỉ có một luồng duy nhất được phép thực thi đoạn mã này tại một thời điểm.
+
+Ví dụ:
+Giả sử chúng ta có một biến đếm chung được chia sẻ giữa nhiều luồng. Nếu nhiều luồng cùng lúc tăng giá trị của biến này lên 1, kết quả cuối cùng có thể không chính xác do các luồng "chen ngang" nhau. Để tránh tình trạng này, chúng ta cần bảo vệ đoạn mã tăng giá trị biến đếm bằng một đoạn găng.
+
+Tác dụng:
+- Tránh Race Condition: Khi nhiều luồng cùng truy cập và sửa đổi một tài nguyên chia sẻ, thứ tự thực thi của các lệnh có thể không xác định, dẫn đến kết quả không mong muốn.
+- Bảo vệ tính toàn vẹn của dữ liệu: Đoạn găng đảm bảo rằng các thao tác trên tài nguyên chia sẻ được thực hiện một cách nguyên tử (atomic), không bị ngắt quãng bởi các luồng khác.
+
+Để thực hiện đoạn găng, các ngôn ngữ lập trình cung cấp các cơ chế đồng bộ hóa như:
+- Mutex (Mutual Exclusion): Một đối tượng khóa chỉ cho phép một luồng giữ tại một thời điểm. Luồng muốn vào đoạn găng phải lấy khóa, và khi xong việc phải trả lại khóa.
+- Semaphore: Một đối tượng đếm cho phép một số lượng luồng nhất định truy cập vào một tài nguyên.
+- Monitor: Một cấu trúc dữ liệu cung cấp các cơ chế đồng bộ hóa như điều kiện, biến khóa, và các phương thức để truy cập vào tài nguyên chia sẻ.
+
+
+## 3. Các khái niệm
+#### 1.Đa nhiệm ưu tiên(preempetive multitasking)
 
 Hệ điều hành có thể bắt đầu chuyển ngữ cảnh từ tiến trình đang chạy sang tiến trình khác. Nói cách khác, hệ điều hành cho phép dừng việc thực thi tiến trình hiện đang chạy và phân bổ CPU cho một số tiến trình khác. HĐH sử dụng một số tiêu chí để quyết định thời gian một tiến trình sẽ thực thi trước khi cho phép một tiến trình khác sử dụng hệ điều hành. Cơ chế lấy quyền kiểm soát hệ điều hành từ một tiến trình và trao nó cho một tiến trình khác được gọi là quyền ưu tiên
 
-2. Đa nhiệm hợp tác(cooperative multitasking)
+#### 2. Đa nhiệm hợp tác(cooperative multitasking)
 
 Hệ điều hành không bao giờ bắt đầu chuyển ngữ cảnh từ tiến trình đang chạy sang tiến trình khác. Chuyển đổi ngữ cảnh chỉ xảy ra khi các tiến trình tự nguyện nhường quyền kiểm soát theo định kỳ hoặc khi không hoạt động hoặc bị chặn theo logic để cho phép nhiều ứng dụng thực thi đồng thời. Ngoài ra, trong đa nhiệm này, tất cả các quy trình đều hợp tác để sơ đồ lập lịch hoạt động.
 
-Hệ điều hành chỉ điều phối task vào cac tài nguyên đang rảnh, các task sẽ tự quản lý vòng đời của chúng.
+
+
+- tiến trình: một chương trình đang được thực thi.
+- ngữ cảnh: trạng thái của một tiến trình tại một thời điểm nhất định.
+- chuyển đổi ngữ cảnh: quá trình lưu trữ trạng thái của tiến trình hiện tại và khôi phục trạng thái của tiến trình khác để cho phép tiến trình khác thực thi.
+- lập lịch: quá trình quyết định tiến trình nào sẽ được thực thi tiếp theo và trong bao lâu.
 
 |   |                                                                 Đa nhiệm ưu tiên                                                                 |                                                                             Đa nhiệm hợp tác                                                                            |
 |:-:|:------------------------------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
@@ -158,16 +243,58 @@ Hệ điều hành chỉ điều phối task vào cac tài nguyên đang rảnh,
 | 4 | Một  chương trình độc hại bắt đầu một vòng lặp vô hạn, nó chỉ gây tổn hại  cho chính nó mà không ảnh hưởng đến các chương trình hoặc luồng khác. | Một  chương trình độc hại có thể khiến toàn bộ hệ thống ngừng hoạt động do  bận chờ đợi hoặc chạy một vòng lặp vô hạn và không từ bỏ quyền kiểm  soát.                  |
 | 5 | Đa nhiệm ưu tiên buộc các ứng dụng phải chia sẻ CPU dù muốn hay không.                                                                           | Trong  đa nhiệm hợp tác, tất cả các chương trình phải hợp tác để nó hoạt động.  Nếu một chương trình không hợp tác, nó có thể chiếm CPU.                                |
 
-3. Deadlock
-Xảy ra khi hai hoặc nhiều luồng khong thể thực thi do tài nguyên phụ thuộc lần nhau, tài nguyên cần của luồng 1 giữ bởi luồng 2, tài nguyên cần của luồng 2 lại giữ ở luồng 1
+#### 3. Deadlock
+Tình trạng khi hai hoặc nhiều luồng (thread) đang chờ đợi lẫn nhau để giải phóng tài nguyên, dẫn đến việc không luồng nào có thể tiếp tục thực thi. Tình trạng này thường xảy ra trong các ứng dụng đa luồng, đặc biệt khi sử dụng các cơ chế đồng bộ hóa như synchronized hoặc các lớp Lock
+- Mutual exclusion (Loại trừ tương hỗ): Một tài nguyên chỉ có thể được sử dụng bởi một luồng tại một thời điểm.
+- Hold and wait (Giữ và chờ): Một luồng đang giữ tài nguyên và đang chờ đợi để nhận thêm tài nguyên khác.
+- No preemption (Không chiếm đoạt): Một luồng không thể bị lấy đi tài nguyên mà nó đang giữ cho đến khi nó tự nguyện trả lại.
+- Circular wait (Chờ tuần hoàn): Có một chuỗi các luồng, trong đó mỗi luồng đang chờ đợi một tài nguyên được giữ bởi luồng tiếp theo trong chuỗi.
+#### 4. Liveness
+Liveness mô tả khả năng của một hệ thống đảm bảo rằng một tiến trình sẽ tiến hành đến một trạng thái mong muốn trong một khoảng thời gian hữu hạn.
+#### 5. livelock
+   Livelock là một tình huống mà các tiến trình liên tục thay đổi trạng thái nhưng không tiến gần hơn đến trạng thái hoàn thành.
 
-4. Liveness
-5. livelock
-6. Starvation
+Sự khác biệt giữa Livelock và Deadlock:
+- Deadlock: Các tiến trình bị "mắc kẹt" hoàn toàn, không có tiến trình nào có thể tiến hành.
+- Livelock: Các tiến trình vẫn đang hoạt động nhưng không tiến tới giải quyết vấn đề.
+#### 6. Starvation
+Một tiến trình không bao giờ được cấp tài nguyên cần thiết để tiến hành.
+
 một vài policy cần thiết để quyết định xem có nhận được tài nguyên khi xay ra tiến trình, vì lí do đó dẫn đến một vài tiến trình không nhận được tài nguyên mặc dù không xảy ra deadlock
-7. Synchorous
+#### 7. Synchorous
+Định nghĩa: Trong lập trình đồng bộ, một tác vụ phải hoàn thành trước khi tác vụ tiếp theo có thể bắt đầu. Tức là, các tác vụ thực hiện tuần tự, chờ đợi kết quả của tác vụ trước đó.
 
-8. Asynchronous là chương trình không
+Ưu điểm:
+- Dễ hiểu và dễ quản lý: Luồng thực thi rõ ràng, dễ theo dõi.
+- Thích hợp cho các tác vụ đơn giản, không yêu cầu hiệu suất cao.
+
+Nhược điểm:
+- Hiệu suất thấp: Nếu một tác vụ bị chặn, toàn bộ chương trình có thể bị đình trệ.
+- Khó tận dụng tối đa tài nguyên hệ thống: Trong khi một tác vụ đang chờ, các tài nguyên khác như CPU có thể bị lãng phí.
+
+#### 8. Asynchronous 
+Định nghĩa: Trong lập trình bất đồng bộ, các tác vụ có thể chạy song song, không cần chờ đợi kết quả của tác vụ khác. Khi một tác vụ được khởi động, nó sẽ tiếp tục thực thi trong nền, và chương trình chính có thể tiếp tục làm việc khác.
+
+Ưu điểm:
+- Hiệu suất cao: Tận dụng tối đa tài nguyên hệ thống, đặc biệt khi thực hiện nhiều tác vụ I/O.
+- Trải nghiệm người dùng tốt hơn: Ứng dụng vẫn phản hồi được trong khi các tác vụ nền đang chạy.
+
+Nhược điểm:
+- Phức tạp hơn: Quản lý các tác vụ bất đồng bộ đòi hỏi kỹ thuật lập trình phức tạp hơn.
+- Khó gỡ lỗi: Việc theo dõi và gỡ lỗi các lỗi trong các hệ thống bất đồng bộ có thể khó khăn hơn.
+
+
+***Khi nào nên sử dụng đồng bộ và bất đồng bộ?***
+
+Sử dụng đồng bộ:
+- Các tác vụ đơn giản, không yêu cầu hiệu suất cao.
+- Các trường hợp cần đảm bảo thứ tự thực hiện của các tác vụ.
+
+Sử dụng bất đồng bộ:
+- Các tác vụ I/O nặng (đọc/ghi file, truy cập mạng).
+- Các ứng dụng yêu cầu giao diện người dùng phản hồi nhanh.
+- Các hệ thống phân tán.
+
 
 ### ThreadPool
 ThreadPool là một tập hợp các luồng làm việc (worker threads) được tạo ra trước và sẵn sàng xử lý các tác vụ. Điều này giúp giảm thiểu chi phí liên quan đến việc tạo và hủy luồng. ThreadPool cho phép  quản lý hiệu quả số lượng luồng đang hoạt động trong ứng dụng và tự động điều chỉnh chúng để đáp ứng nhu cầu.
