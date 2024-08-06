@@ -102,19 +102,29 @@ Chỉ chọn các cột cần thiết thay vì sử dụng "SELECT *". Điều n
 eg:
 
 SELECT * FROM customers WHERE country ='USA'
+```
+![alt text](img19.png)
 
+```
 Tối ưu
 
 SELECT customerName, phone FROM customers
 WHERE country ='USA'
 
 ```
+
+![alt text](img20.png)
+
 ### 2. Sử dụng index
 Chỉ mục giúp MySQL tìm và truy xuất dữ liệu cần thiết một cách nhanh chóng mà không cần quét toàn bộ bảng.
 ```
 eg:
 SELECT * FROM customers WHERE customerName = 'Herkku Gifts';
+```
 
+![alt text](img21.png)
+![alt text](img23.png)
+```
 
 Tối ưu:
 
@@ -122,6 +132,8 @@ CREATE INDEX idx_customer_name ON customers (customerName)
 SELECT * FROM customers WHERE customerName = 'Herkku Gifts';
 
 ```
+![alt text](img22.png)
+![alt text](img24.png)
 Xác định dữ liệu được truy cập thường xuyên và các cột được sử dụng trong mệnh đề WHERE, JOIN và ORDER BY, sau đó tạo chỉ mục trên các cột đó. 
 
 Tránh tạo quá nhiều chỉ mục, vì quá nhiều chỉ mục có thể làm chậm các thao tác chèn, cập nhật và xóa.
@@ -138,7 +150,10 @@ Subquery: Một truy vấn nằm lồng bên trong một truy vấn khác, thư�
 eg:
 SELECT customerName FROM  customers WHERE customerNumber IN (SELECT customerNumber FROM orders WHERE orderDate = '2003-11-11');
 
-
+```
+![alt text](img25.png)
+![alt text](img27.png)
+```
 Tối ưu:
 
 SELECT c.customerName
@@ -147,7 +162,9 @@ INNER JOIN orders o ON c.customerNumber = o.customerNumber
 WHERE o.orderDate = '2003-11-11';
 
 ```
-### 4. Sử dụng EXIST thay vì IN hay NOT IN
+![alt text](img26.png)
+![alt text](img28.png)
+### 4. Sử dụng EXIST thay vì IN
 
 IN: Kiểm tra xem một giá trị có tồn tại trong một tập hợp các giá trị hay không.
 
@@ -162,8 +179,10 @@ Trong nhiều trường hợp, sử dụng EXISTS có thể hiệu quả hơn IN
 eg: 
 SELECT * FROM orders
 WHERE customerNumber IN (SELECT customerNumber FROM customers WHERE city = 'NYC');
-
-
+```
+![alt text](img29.png)
+![alt text](img31.png)
+```
 Tối ưu
 SELECT * FROM orders o
 WHERE EXISTS (
@@ -172,16 +191,21 @@ WHERE EXISTS (
 );
 
 ```
+![alt text](img30.png)
+![alt text](img32.png)
 ### 5.  Giới hạn kết quả
 Sử dụng LIMIT để giới hạn số lượng hàng mà câu lệnh truy vấn trả về. Điều này có thể tăng đáng kể hiệu năng của MySQL, đặc biệt đối với các câu lệnh truy vấn có tập kết quả lớn.
 ```dtd
 eg
 SELECT * from employees;
 
-
+```
+![alt text](img33.png)
+```
 Tối ưu:
 SELECT * from employees limit 10;
 ```
+![alt text](img34.png)
 ### 6. Tránh sử dụng Wildcard ở đầu của câu lệnh LIKE
 Wildcard: Ký tự đại diện cho một hoặc nhiều ký tự trong một chuỗi tìm kiếm.
 
@@ -192,11 +216,17 @@ Khi bạn sử dụng một wildcard (*) ở đầu của một câu lệnh LIKE
 eg:
    SELECT * FROM products WHERE productname LIKE '%Ford';
 
-
+```
+![alt text](img35.png)
+![alt text](img37.png)
+```
 Tối ưu
    SELECT * FROM products WHERE productName LIKE 'Ford%'; 
 
 ```
+![alt text](img36.png)
+![alt text](img38.png)
+
 ### 7. Tránh sử dụng DISTINCT
 DISTINCT nhằm loại bỏ các bản ghi trùng lặp trong kết quả truy vấn. Để thực hiện DISTINCT, MySQL phải sắp xếp và so sánh các hàng để tìm ra các hàng duy nhất. Điều này có thể tiêu tốn nhiều tài nguyên, đặc biệt khi tập dữ liệu lớn.
 
@@ -204,12 +234,15 @@ Tránh sử dụng DISTINCT khi không cần thiết
 ```dtd
 eg: 
 SELECT DISTINCT * FROM products;
-
-
+```
+![alt text](img39.png)
+![alt text](img41.png)
+```
 Tối ưu
 SELECT DISTINCT productLine FROM products;
 ```
-
+![alt text](img40.png)
+![alt text](img42.png)
 ### 8. Tránh sử dụng các hàm
 Sử dụng các hàm trong điều kiện WHERE của một truy vấn MySQL có thể làm giảm đáng kể hiệu năng, đặc biệt là khi có chỉ mục trên cột đó
 - Chỉ mục không hoạt động hiệu quả: Khi bạn áp dụng một hàm lên một cột có chỉ mục, MySQL sẽ không thể sử dụng chỉ mục đó để tìm kiếm dữ liệu. Điều này buộc MySQL phải quét toàn bộ bảng để tìm kết quả, làm giảm đáng kể hiệu năng.
@@ -219,11 +252,17 @@ eg:
 SELECT * FROM orders
 WHERE YEAR(orderdate) = 2004 AND MONTH(orderdate) =1; 
 
+```
+![alt text](img43.png)
+![alt text](img45.png)
 
+```
 Tối ưu:
 SELECT * FROM orders 
 WHERE orderdate BETWEEN '2004-01-01' AND '2004-01-31';
 ```
+![alt text](img44.png)
+![alt text](img46.png)
 ### 9. Dùng UNION thay vì OR
 
 - OR: Được sử dụng để kết hợp các điều kiện trong một mệnh đề WHERE, trả về các hàng thỏa mãn ít nhất một trong các điều kiện đó.
@@ -237,13 +276,18 @@ eg:
 SELECT * FROM products
 WHERE productLine = 'Classic Cars' OR productLine = 'Motorcycles';
 
-
+```
+![alt text](img47.png)
+![alt text](img49.png)
+```
 Tối ưu
 SELECT * FROM products WHERE productLine = 'Classic Cars'
 UNION
 SELECT * FROM products WHERE productLine = 'Motorcycles';
 
 ```
+![alt text](img48.png)
+![alt text](img50.png)
 ### 10. Sử dụng JOIN HIỆU QUẢ
 
 JOIN là một mệnh đề quan trọng trong SQL, đặc biệt là khi làm việc với nhiều bảng trong cơ sở dữ liệu. Nó cho phép kết hợp dữ liệu từ hai hoặc nhiều bảng dựa trên một cột chung. MySQL hỗ trợ nhiều loại JOIN khác nhau, mỗi loại có mục đích sử dụng riêng.
@@ -279,12 +323,18 @@ SELECT e.lastName, e.firstName, o.addressLine1, o.addressLine2, o.city, o.countr
 FROM employees e, offices o
 WHERE e.officeCode= o.officeCode;
 
+```
+![alt text](img51.png)
+![alt text](img53.png)
 
+```
 Tối ưu:
 SELECT e.lastName, e.firstName, o.addressLine1, o.addressLine2, o.city, o.country, o.postalCode
 FROM employees e
 INNER JOIN offices o ON e.officeCode = o.officeCode;
 ```
+![alt text](img52.png)
+![alt text](img54.png)
 ## Sử dụng EXPLAIN phân tích
 
 - Hiểu rõ quá trình thực thi: EXPLAIN cho bạn thấy từng bước MySQL sẽ làm gì để trả về kết quả.
@@ -611,9 +661,9 @@ Transaction có 4 tính chất (ACID):
 **Isolation Levels**
 
 Isolation levels là các mức cô lập dữ liệu. Mỗi transactions được chỉ định 1 isolation levels để chỉ định mức độ mà nó phải được cách ly khỏi các  sự sửa đổi dữ liệu được thực hiện bởi các transaction khác.
-- Repeatable read: Mức isolation mặc định của innoDB engine .Mức isolation này hoạt động như mức read commited nhưng nâng thêm một nấc nữa bằng cách ngăn không cho transaction ghi vào dữ liệu đang được đọc bởi một transaction khác cho đến khi transaction khác đó hoàn tất.
 - Read uncommited: đây là mức cô lập thấp nhât. Khi transaction thực hiện ở mức này, các truy vấn vẫn có thể truy nhập vào các bản ghi đang được cập nhật bởi một transaction khác và nhận được dữ liệu tại thời điểm đó mặc dù dữ liệu chưa được commit.Điều này sẽ dẫn đến có thể xảy ra Dirty read
 - Read Commited: Transaction sẽ không đọc được dữ liệu đang được cập nhật mà phải đợi đến khi việc cập nhật thực hiện xong. Vì thế nó tránh được dirty read, tuy nhiên việc read commited chỉ áp dụng cho lệnh update mà không áp dụng cho lệnh insert hoặc delete, vì thế có thể xảy ra phantom read.
+- Repeatable read: Mức isolation mặc định của innoDB engine .Mức isolation này hoạt động như mức read commited nhưng nâng thêm một nấc nữa bằng cách khi một transaction đọc dữ liệu mà có một transaction khác ghi dữ liệu vào thì transaction đọc chỉ đọc dữ liệu ban đầu. 
 - Serializable :Đây là mức cô lập cao nhất, các transactions hoàn toàn tách biệt với nhau, SQL đặt read + write lock trên dữ liệu cho tới khi transaction kết thúc. Vì thế hiện tượng phantom read sẽ không còn ở mức này.
 ### CAP theorem
 ![alt text](img14.png)

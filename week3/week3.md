@@ -139,7 +139,21 @@ System.out.println(“Thread đang chạy”);
 }
 
 ```
-### 2.2 Synchonized
+####  Critical section (đoạn găng)
+Đoạn găng (critical section) là một đoạn mã truy cập vào các tài nguyên chia sẻ. Để đảm bảo tính nhất quán của dữ liệu và tránh các tình huống đua (race condition), chỉ có một luồng duy nhất được phép thực thi đoạn mã này tại một thời điểm.
+
+Ví dụ:
+Giả sử chúng ta có một biến đếm chung được chia sẻ giữa nhiều luồng. Nếu nhiều luồng cùng lúc tăng giá trị của biến này lên 1, kết quả cuối cùng có thể không chính xác do các luồng "chen ngang" nhau. Để tránh tình trạng này, chúng ta cần bảo vệ đoạn mã tăng giá trị biến đếm bằng một đoạn găng.
+
+Tác dụng:
+- Tránh Race Condition: Khi nhiều luồng cùng truy cập và sửa đổi một tài nguyên chia sẻ, thứ tự thực thi của các lệnh có thể không xác định, dẫn đến kết quả không mong muốn.
+- Bảo vệ tính toàn vẹn của dữ liệu: Đoạn găng đảm bảo rằng các thao tác trên tài nguyên chia sẻ được thực hiện một cách nguyên tử (atomic), không bị ngắt quãng bởi các luồng khác.
+
+Để thực hiện đoạn găng, các ngôn ngữ lập trình cung cấp các cơ chế đồng bộ hóa như:
+- Mutex (Mutual Exclusion): Một đối tượng khóa chỉ cho phép một luồng giữ tại một thời điểm. Luồng muốn vào đoạn găng phải lấy khóa, và khi xong việc phải trả lại khóa.
+- Semaphore: Một đối tượng đếm cho phép một số lượng luồng nhất định truy cập vào một tài nguyên.
+- Monitor: Một cấu trúc dữ liệu cung cấp các cơ chế đồng bộ hóa như điều kiện, biến khóa, và các phương thức để truy cập vào tài nguyên chia sẻ.
+#### Synchonized
 
 Trong lập trình đa luồng, đồng bộ hóa (synchronization) là một cơ chế đảm bảo rằng chỉ có một luồng duy nhất được phép truy cập vào một tài nguyên chia sẻ tại một thời điểm. Điều này đặc biệt quan trọng khi nhiều luồng cùng truy cập vào cùng một dữ liệu, giúp tránh các tình huống đua (race condition) và đảm bảo tính toàn vẹn của dữ liệu.
 
@@ -203,20 +217,7 @@ Lưu ý:
 - Tránh khóa lồng nhau: Việc lồng quá nhiều khối synchronized có thể dẫn đến deadlock.
 - Thời gian giữ khóa ngắn: Nên giữ khóa trong thời gian ngắn nhất có thể để tăng khả năng sử dụng đồng thời.
 
-####  Critical section (đoạn găng)
-Đoạn găng (critical section) là một đoạn mã truy cập vào các tài nguyên chia sẻ. Để đảm bảo tính nhất quán của dữ liệu và tránh các tình huống đua (race condition), chỉ có một luồng duy nhất được phép thực thi đoạn mã này tại một thời điểm.
 
-Ví dụ:
-Giả sử chúng ta có một biến đếm chung được chia sẻ giữa nhiều luồng. Nếu nhiều luồng cùng lúc tăng giá trị của biến này lên 1, kết quả cuối cùng có thể không chính xác do các luồng "chen ngang" nhau. Để tránh tình trạng này, chúng ta cần bảo vệ đoạn mã tăng giá trị biến đếm bằng một đoạn găng.
-
-Tác dụng:
-- Tránh Race Condition: Khi nhiều luồng cùng truy cập và sửa đổi một tài nguyên chia sẻ, thứ tự thực thi của các lệnh có thể không xác định, dẫn đến kết quả không mong muốn.
-- Bảo vệ tính toàn vẹn của dữ liệu: Đoạn găng đảm bảo rằng các thao tác trên tài nguyên chia sẻ được thực hiện một cách nguyên tử (atomic), không bị ngắt quãng bởi các luồng khác.
-
-Để thực hiện đoạn găng, các ngôn ngữ lập trình cung cấp các cơ chế đồng bộ hóa như:
-- Mutex (Mutual Exclusion): Một đối tượng khóa chỉ cho phép một luồng giữ tại một thời điểm. Luồng muốn vào đoạn găng phải lấy khóa, và khi xong việc phải trả lại khóa.
-- Semaphore: Một đối tượng đếm cho phép một số lượng luồng nhất định truy cập vào một tài nguyên.
-- Monitor: Một cấu trúc dữ liệu cung cấp các cơ chế đồng bộ hóa như điều kiện, biến khóa, và các phương thức để truy cập vào tài nguyên chia sẻ.
 
 
 ## 3. Các khái niệm
@@ -227,7 +228,6 @@ Hệ điều hành có thể bắt đầu chuyển ngữ cảnh từ tiến trì
 #### 2. Đa nhiệm hợp tác(cooperative multitasking)
 
 Hệ điều hành không bao giờ bắt đầu chuyển ngữ cảnh từ tiến trình đang chạy sang tiến trình khác. Chuyển đổi ngữ cảnh chỉ xảy ra khi các tiến trình tự nguyện nhường quyền kiểm soát theo định kỳ hoặc khi không hoạt động hoặc bị chặn theo logic để cho phép nhiều ứng dụng thực thi đồng thời. Ngoài ra, trong đa nhiệm này, tất cả các quy trình đều hợp tác để sơ đồ lập lịch hoạt động.
-
 
 
 - tiến trình: một chương trình đang được thực thi.
@@ -320,6 +320,7 @@ public class ThreadPoolExample {
     }
 }
 ```
+
 
 Một ThreadPool với 4 luồng làm việc và gửi 10 tác vụ đến ThreadPool. ThreadPool sẽ tự động phân công các tác vụ cho các luồng làm việc và thực hiện chúng. Sau khi tất cả các tác vụ hoàn thành, chúng ta đóng ThreadPool.
 ### lock, atomic integer, concurrent hashmap, race condition, virtual thread
