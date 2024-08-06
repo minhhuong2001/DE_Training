@@ -7,15 +7,20 @@ replication,
 types
 
 ![alt text](img1.png)
+
 Unstructured: video, audio
 Structured data: sql, 
-Semi-Structured: 
+Semi-Structured: json, xml
+
 dbms
 
 ![alt text](img2.png)
+
 big data
 data warehouse
+
 ![alt text](img3.png)
+
 # Hadoop
 Apache Hadoop là một framework mã nguồn mở nhằm mục đích giúp tương tác với dữ liệu lớn dễ dàng hơn.
 
@@ -27,10 +32,10 @@ Hadoop Ecosystem là một platform hoặc một bộ cung cấp các dịch v�
 - MapReduce: Programming based Data Processing
 - Spark: In-Memory data processing
 ## 1. Yarn
-
 Chức năng cơ bản:
 - Quản lý các tài nguyên của cluster
 - Lập lịch và điều phối job
+
 Các thành phần chính của YARN:
 - Resource Manager
     + Applicatiob Manager
@@ -73,7 +78,9 @@ Container là tiến trình của YARN, tập hợp các tài nguyên vật lý 
 
 #### 1.3.1 MapReduce1
 phiên bản đầu tiên của Hadoop, được gọi là MapReduce1 (MR1). MR1 không có YARN, chỉ thực hiện các MapReduce jobs.
+
 ![alt text](img8.png)
+
 MR1 có hai luồng daemon quản lý thực thi jobs
 - JobTracker: chịu trách nhiệm điều phối việc thực thi tất cả các job được gửi đến cluster
 - TaskTracker: hạy các task và báo cáo tiến độ cho JobTracker.
@@ -84,11 +91,10 @@ MR1 là phiên bản đầu tiên của Hadoop, chỉ hỗ trợ MapReduce và g
 ![alt text](img9.png)
 
 Horizontal Scaling: mở rộng bằng cách thêm nhiều máy vào nhóm tài nguyên.
+
 Vertical Scaling: mở rộng bằng cách thêm power (CPU, RAM) vào một máy hiện có.
+
 ### 1.4 Scheduler
-
-
-
 Tùy thuộc vào nhu cầu sử dụng mà YARN scheduler cung cấp các policies khác nhau. Hiện nay YARN hỗ trợ ba policies chính là:
 - FIFO Scheduler
 - Capacity Scheduler
@@ -107,6 +113,7 @@ Capacity Scheduler chia tài nguyên trong YARN thành các queue, ứng dụng 
 Hai queue A và B, có 2 job submit tương ứng, và chạy ngay khi được submit, điều này khắc phục tồn tại ở FIFO Scheduler, các job có thể chạy song song đồng thời, cả job lớn lẫn job nhỏ.  Tuy nhiên chúng ta sẽ phải cân đối tài nguyên giữa các queue, phân chia hợp lý để đảm bảo các queue đủ tài nguyên chạy job của mình, vì tài nguyên là hữu hạn nên khi tăng queue này đồng nghĩa với việc phải giảm tài nguyên của queue khác.
 
 Vì thực tế có thể tại một thời điểm một queue dùng nhiều hơn lượng tài nguyên được cấp phát (có nhiều job lớn, dữ liệu về nhiều,…) nên Capacity Scheduler có cấu hình min và max capacity cho một queue, min là lượng tài nguyên đảm bảo chắc chắn queue này được có, max là lượng tài nguyên queue có thể tăng thêm trong trường hợp các queue khác không sử dụng đến. Tổng cấu hình min capacity của các queue là 100% tài nguyên cụm.
+
 Việc submit job vào một queue cụ thể là do cấu hình ứng dụng, ví dụ như nếu dùng spark application thì tham số `spark.yarn.queue=queueA` chỉ ra rằng ứng dụng sẽ được submit vào queueA, nếu không xác định thì mặc định ứng dụng được submit vào queue default. Capacity Scheduler cũng hỗ trợ việc kiểm soát người dùng có thể submit job lên một queue với tham số `yarn.scheduler.capacity.root.<queue-path>.acl_submit_applications` . Khi submit ứng dụng lên YARN thì tên ứng dụng hay tên user submit ứng dụng cũng có thể dùng để xác định queue cho ứng dụng này, cấu hình ở `yarn.scheduler.capacity.queue-mappings` và `yarn.scheduler.queue-placement-rules.app-name` .
 
 
@@ -116,6 +123,7 @@ Nếu như Capacity Scheduler yêu cầu bạn phải dự trữ trước 1 lư�
 ![alt text](img12.png)
 
 Hai queue là queue A và queue B cấu hình 50% tài nguyên cụm, sử dụng fair scheduler. Job 1 đầu tiên được submit vào queue A và sử dụng toàn bộ tài nguyên trong cụm, sau đó job 2 submit vào queue B, lúc này job 1 đang chạy chiếm full tài nguyên cụm, YARN sẽ phải chờ đến khi một số container nhỏ của job1 finished rồi cấp container free đó cho job 2 chạy. Sau một khoảng thời gian thì job 1 và job 2 đều chiếm 50% tài nguyên cụm, tương ứng full tài nguyên của queue A và B. Tiếp đó job 3 được submit lên queue B, lúc này job 3 cũng chờ job 2 free tài nguyên để sử dụng, sau đó job 2 và 3 chia nhau 50% tài nguyên của queueB.
+
 Cơ chế Fair Scheduler cho phép các queue đều được chia sẻ tài nguyên một cách công bằng, các queue running luôn được cấp tài nguyên đảm bảo theo như cấu hình nhỏ nhất. Các queue đều có thuộc tính weights, ví dụ queue A và queue B ở trên có tỉ lệ là 50:50 nếu như weights không được xác định từ đầu, weight chỉ ra tương quan tỷ lệ tài nguyên giữa các queue chứ không phải là tỷ lệ phần trăm, nếu queue A có weight là 2 và queue B có weight 3 thì tỷ lệ tài nguyên sử dụng đồng thời giữa 2 queue là 2:3.
 
 Đối với Fair Scheduler, khi có một ứng dụng mới được submit, việc chọn queue tuân theo chính sách queuePlacementPolicy. Ví dụ:
@@ -149,6 +157,7 @@ Mô hình lập trình MapReduce có các đặc điểm sau:
 - Song song: Các tác vụ map và reduce luôn hoạt động song song.
 - Khả năng chịu lỗi: Nếu bất kỳ tác vụ nào thất bại, nó sẽ được lập lịch lại trên một node khác.
 - Khả mở rộng: Nó có thể mở rộng tùy ý. Khi vấn đề trở nên lớn hơn, nhiều máy có thể được thêm vào để giải quyết vấn đề trong một khoảng thời gian hợp lý; khung có thể mở rộng theo chiều ngang hơn là chiều dọc.
+
 
 Đầu vào và đầu ra
 ### 2.3 Input and Output

@@ -20,7 +20,7 @@ hạn chế file quá lớn, `cat filename.txt|more`
 - Hiển thị số dòng: option -n
 - Đánh số những dòng không trống: option -b
 2. head: in ra N dòng đầu tiên của tệp, giá trị mặc định của N là 10
-3. tail: in ra N-1 dòng cuối cùng của tệp, giá trị mặc định của N là 10
+3. tail: in ra N dòng cuối cùng của tệp, giá trị mặc định của N là 10
 4. mkdir:  chưa tồn tại
 - tạo thư mục: `mkdir <path_name>`
 - tạo nhiều thư mục: `mkdir <path_name_1> <path_name_2> <path_name_3>`
@@ -38,28 +38,43 @@ hạn chế file quá lớn, `cat filename.txt|more`
 	ls-l: hiển thị tệp hoặc thư mục, kích thước, ngày, thời gian đã sửa đổi, tên tệp hoặc tên thư mục và chủ sở hữu (owner) tệp và các quyền (permission).
 	ls-a: lấy danh sách các file kể cả file ẩn, tệp ẩn bắt đầu bằng ‘.’
 9. cd: thay đổi thư mục
+- cd .. : về thư mục cha
+- cd ~ : thư mục home
+- cd - :  thư mục trước đó
+
+
+
+
 ## Command liên quan đến quyền
-
-
--chmod : sửa đổi quyền truy cập của người dùng
-    chmod +rwx filename để thêm quyền
-    chmod -rwx directoryname để xóa bỏ quyền. 
-    chmod +x filename cho phép quyền thực thi.
-    chmod -wx filename xóa quyền ghi, thực thi.
+- Read (r): xem file.
+- Write (w): ghi, chỉnh sửa file hoặc đường dẫn.
+- Execute (x): thực thi file, xem đường dẫn.
+    
+chmod : sửa đổi quyền truy cập của người dùng
+    `chmod +rwx filename` để thêm quyền
+    `chmod -rwx directoryname` để xóa bỏ quyền. 
+    `chmod +x filename` cho phép quyền thực thi.
+    `chmod -wx filename` xóa quyền ghi, thực thi.
 
 Có 3 nhóm cho sự phân quyền
-    owners: these permissions will only apply to owners and will not affect other groups.
-    groups: you can assign a group of users specific permissions, which will only impact users within the group.
-    all users: these permissions will apply to all users, and as a result, they present the greatest security risk and should be assigned with caution.
-    
-    
-    Read (r): xem file.
-    Write (w): ghi, chỉnh sửa file hoặc đường dẫn.
-    Execute (x): thực thi file, xem đường dẫn.
-    
-  hanging directory perm for group owners is similar, but add a “g” for group or “o” for users:
+- owners: these permissions will only apply to owners and will not affect other groups.
+- groups: you can assign a group of users specific permissions, which will only impact users within the group.
+- all users: these permissions will apply to all users, and as a result, they present the greatest security risk and should be assigned with caution.
+```
+Octal Value           Protection mechanism
+   400                   Read by owner
+   200                   Write (delete) by owner
+   100                   Execute (search in directory) by owner
+   040                   Read by group
+   020                   Write (delete) by group
+   010                   Execute (search) by group
+   004                   Read by others (i.e., rest of the world)
+   002                   Write (delete) by others (dangerous!)
+   001                   Execute (search) by others
 
-    chmod g+w filename
+```
+  
+     chmod g+w filename
 
     chmod g-wx filename
 

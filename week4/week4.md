@@ -263,31 +263,8 @@ WHERE orderdate BETWEEN '2004-01-01' AND '2004-01-31';
 ```
 ![alt text](img44.png)
 ![alt text](img46.png)
-### 9. Dùng UNION thay vì OR
 
-- OR: Được sử dụng để kết hợp các điều kiện trong một mệnh đề WHERE, trả về các hàng thỏa mãn ít nhất một trong các điều kiện đó.
-- UNION: Được sử dụng để kết hợp kết quả của hai hoặc nhiều truy vấn SELECT thành một tập kết quả duy nhất.
 
-Khi sử dụng OR với nhiều điều kiện, MySQL có thể phải quét toàn bộ bảng để tìm các hàng thỏa mãn. Trong khi đó, UNION chia nhỏ công việc tìm kiếm thành các truy vấn con nhỏ hơn, có thể giúp giảm thời gian thực thi.
-  
-Union có thể giúp câu truy vấn trở nên nhanh hơn đặt biệt là trong trường hợp đã đánh index một cách hợp lý.
-```
-eg:
-SELECT * FROM products
-WHERE productLine = 'Classic Cars' OR productLine = 'Motorcycles';
-
-```
-![alt text](img47.png)
-![alt text](img49.png)
-```
-Tối ưu
-SELECT * FROM products WHERE productLine = 'Classic Cars'
-UNION
-SELECT * FROM products WHERE productLine = 'Motorcycles';
-
-```
-![alt text](img48.png)
-![alt text](img50.png)
 ### 10. Sử dụng JOIN HIỆU QUẢ
 
 JOIN là một mệnh đề quan trọng trong SQL, đặc biệt là khi làm việc với nhiều bảng trong cơ sở dữ liệu. Nó cho phép kết hợp dữ liệu từ hai hoặc nhiều bảng dựa trên một cột chung. MySQL hỗ trợ nhiều loại JOIN khác nhau, mỗi loại có mục đích sử dụng riêng.

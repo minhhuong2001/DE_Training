@@ -14,13 +14,18 @@ file metadata: tên tệp, chủ sở hữu, điều khiển truy cập bảo m�
 
 i-node : lưu metadata , chứa thông tin địa chỉ vật lí này lưu data gì (map physical -> logical )
 
-![alt text](img20.png)
+
 
 ### 3.2. Architecture
+
+![alt text](img15.png)
+
 Mục đích:
 - Large files: hệ thống lưu trữ các file lớn chứa hàng trăm gigabytes hay petabytes
 - Streaming data access: HDFS được tối ưu và xấy dựng để write-once and read-many-times .
 - Commodity hardware: được thiết kế để chạy trên các clusters với phần cứng hàng hóa giá rẻ, không yêu cầu phần cứng chuyên dụng đắt tiền.
+  
+![alt text](img14.png)
 
 Component
 - Namenode (NN): kiểm soát quyền truy cập của máy khách vào tệp và lưu trữ metadat 
@@ -34,6 +39,8 @@ HDFS không phù hợp cho:
 
 ### 3.3 HDFS Blocks
 
+![alt text](img16.png)
+
 HDFS không phải là một filesystem vật lý, mà là một sự trừu tượng hóa ảo trên các filesystem dựa trên đĩa phân tán. HDFS không thể được duyệt như filesystem cục bộ ---> shell HDFS, giao diện web HDFS hoặc API.
 
 Một tệp trong HDFS được chia theo lôgic thành các khối HDFS.
@@ -41,6 +48,7 @@ Một tệp trong HDFS được chia theo lôgic thành các khối HDFS.
 
 HDFS Blocks của một tệp đơn có thể trải rộng trên các máy khác nhau trong cụm. 
 
+![alt text](img17.png)
 
 HDFS có kích thước khối mặc định lớn.
 - Giảm áp lực bộ nhớ trên Namenode: Namenode phải ghi nhớ tất cả các khối HDFS cho một tệp và giữ thông tin này trong bộ nhớ. 
@@ -51,10 +59,13 @@ HDFS có kích thước khối mặc định lớn.
 
 ### 3.4 Block Replication
 
+![alt text](img18.png)
+
 Mấu chốt đằng sau khả năng chịu được dữ liệu bị hỏng hoặc mất của HDFS là việc sao chép các khối dữ liệu. Nếu một tệp bao gồm 4 khối HDFS và hệ số sao chép là 3, thì mỗi khối dữ liệu sẽ có 3 bản sao của chính nó. Những bản sao này được phân tán trong cụm trên các máy vật lý riêng biệt, tổng cộng là 12 khối. 
 Sao chép đảm bảo rằng nếu một khối dữ liệu bị hỏng hoặc lỗi phần cứng xảy ra, thì yêu cầu đọc vẫn có thể được đáp ứng bởi một bản sao khả dụng khác của khối. Thiết lập này cho phép tự phục hồi. Một khối bị mất do hỏng hóc hoặc lỗi máy có thể được sao chép sang các máy trực tiếp khác bằng cách tạo một bản sao của bản sao khỏe mạnh. Hệ số sao chép được điều khiển bởi thuộc tính dfs.replication. 
 
 ### 3.5 Namenode
+
 Namenode lưu trữ filesystem tree và các metadata cho các tệp và thư mục trong cây. 
 Filesytem metadata được lưu dựa trên các thuộc tính:
 - Namespace Image File
@@ -93,7 +104,11 @@ Với tầm quan trọng của Namenode, điều bắt buộc là phải làm ch
 Datanode lưu trữ data thật sự. Nó lưu trữ các data block và gửi báo báo tới Namenode.
 
 ### 3.7 Đoc/ghi
+
 #### 3.7.1 Quá trình ghi
+
+![alt text](img19.png)
+
 Quá trình ghi bắt đầu khi một client khởi tạo quá trình. Client có thể là một ứng dụng sử dụng API Java hoặc một người làm việc với tiện ích dòng lệnh hdfs. Luồng tương tác giữa client và HDFS diễn ra như sau:
 
 * Client buffer data trên đĩa cục bộ ban đầu. Nó đợi cho đến khi một khối HDFS tích lũy dữ liệu trước khi liên hệ với Namenode.
@@ -104,6 +119,9 @@ Quá trình ghi bắt đầu khi một client khởi tạo quá trình. Client c
 * Một pipeline truyền dữ liệu được hình thành từ client đến tất cả các Datanode liên quan. Một Datanode có thể đồng thời nhận và truyền dữ liệu.
 
 #### 3.7.2 Quá trình đọc
+
+![alt text](img20.png)
+
 - Đọc bắt đầu khi một client thực hiện cuộc gọi RPC đến Namenode để lấy vị trí của một vài khối đầu tiên của một tệp mà client muốn đọc.
 - Namenode trả lời với một danh sách các địa chỉ Datanode cho mỗi khối được yêu cầu. Danh sách trả về cho mỗi khối bao gồm các Datanode có một bản sao của khối. Danh sách các Datanode được sắp xếp theo khoảng cách gần với client. Nếu client, giống như một tác vụ Map, chạy trên một Datanode cũng lưu trữ một bản sao của khối dữ liệu, thì bản sao cục bộ của khối được đọc.
 - Nếu không có bản sao cục bộ của khối dữ liệu hoặc client đang chạy bên ngoài cụm, thì client kết nối với Datanode gần nhất để lấy khối đầu tiên trong tệp. Dữ liệu được truyền từ Datanode đến client cho đến khi kết thúc khối.
@@ -118,6 +136,9 @@ Lưu ý rằng Namenode chỉ chịu trách nhiệm phục vụ các yêu cầu 
 
 ## 4. Spark
 ### 4.1 Giới thiệu về Spark
+
+![alt text](img21.png)
+
 Spark là một nền tảng phổ biến cho xử lý dữ liệu và đã thay thế khung MapReduce truyền thống.
 
 Sự khác biệt với MapReduce
@@ -127,7 +148,10 @@ Sự khác biệt với MapReduce
 
 Spark giữ lại nhiều tính năng của MapReduce như khả năng chịu lỗi, locality-aware scheduling và cân bằng tải. Nhưng Spark nổi bật trong việc tái sử dụng dữ liệu hiệu quả bằng cách lưu trữ nó trong bộ nhớ trên toàn bộ cluster, tiết kiệm round-trips đến đĩa. Truy cập bộ nhớ luôn nhanh hơn truy cập đĩa.
 
+![alt text](img22.png)
 ### 4.2 Architecture
+
+![alt text](img23.png)
 Spark là một khung xử lý dữ liệu song song phân tán và có nhiều điểm tương đồng với khung MapReduce truyền thống. Spark có cùng kiến trúc  master-slave  với MapReduce:
 - Driver là tiến trình chính quản lý việc thực thi một công việc Spark. Nó chịu trách nhiệm duy trì trạng thái tổng thể của ứng dụng Spark, phản hồi chương trình hoặc đầu vào của người dùng và phân tích, phân phối và lập lịch công việc giữa các tiến trình executor. Tiến trình driver là trái tim của ứng dụng Spark và duy trì tất cả thông tin liên quan đến ứng dụng trong suốt vòng đời của ứng dụng.
 
@@ -143,20 +167,25 @@ Một job MapReduce hoặc Spark chạy trên một cụm máy. Trình quản l�
 * Kubernetes
 * Chế độ cục bộ
 
+![alt text](img24.png)
 
 #### 4.2.2 Execution modes
+
+
 
 Spark có thể thực thi ở hai chế độ:
 
 * **Chế độ cụm:** Trong chế độ cụm, người dùng gửi một ứng dụng Spark (tệp .jar Java, Python hoặc R script) đến trình quản lý cụm. Trình quản lý lần lượt sinh ra các tiến trình driver và executor trên các nút worker để thực thi công việc. Trong cài đặt này, cả driver và executor đều sống bên trong cụm.
-
+  ![alt text](img25.png)
 * **Chế độ client:** Chế độ client tương tự như chế độ cụm, ngoại trừ việc tiến trình driver sống trên máy client được sử dụng để gửi công việc Spark bên ngoài cụm. Máy chủ chứa tiến trình driver không được đặt cùng vị trí trên cụm chạy các tiến trình executor. Máy client chịu trách nhiệm duy trì tiến trình driver, trong khi cụm chịu trách nhiệm duy trì các tiến trình executor.
-
+  ![alt text](img26.png)
 ### 4.3 Spark API
 Spark cung cấp các API và trừu tượng dữ liệu giúp cải thiện đáng kể trải nghiệm của nhà phát triển. Spark cho phép xử lý dữ liệu phân tán thông qua các chuyển đổi hàm của các bộ sưu tập dữ liệu (RDD). API Spark giảm đáng kể kích thước của các chương trình so với các khung khác như MapReduce. Ba trừu tượng dữ liệu có sẵn trong Spark là:
 - Resilient Distributed Datasets (RDD)
 - DataFrames
 - Datasets
+  
+![alt text](img27.png)
 
 DataFrames và Datasets thuộc về các API có cấu trúc cấp cao hơn trong khi RDD được gọi là API không cấu trúc hay cấp thấp.
 #### 4.3.1 RDD(Resilient Distributed Dataset)
@@ -266,10 +295,14 @@ Có vẻ như là thừa khi có Datasets khi chúng ta đã có DataFrames. Tuy
 - Nếu tất cả dữ liệu và các chuyển đổi của bạn chấp nhận các lớp case (Scala), thì việc tái sử dụng chúng cho cả khối lượng công việc phân tán và cục bộ là rất đơn giản.
 
 ### 4.3 Running Spark applications
+![alt text](img28.png)
 
 SparkSession là single-unified entry point để thao tác dữ liệu với Spark. Có một sự tương ứng một-một giữa một ứng dụng Spark và một SparkSession. Mỗi ứng dụng Spark được liên kết với một SparkSession. SparkSession có một trường khác: SparkContext đại diện cho kết nối với Cụm Spark. SparkContext có thể tạo RDD, bộ tích lũy, biến phát sóng và chạy code trên cluster. 
 
 ### 4.4 Spark application
+
+![alt text](img29.png)
+
 Một Spark app bao gồm một hoặc một vài jobs. Một Spark job không giống như MapReduce, rộng hơn về phạm vi. Mỗi job được cấu tạo từ các đồ thị không co chu kỳ của stage. Một stage tương đương với một map hoặc một reduce phase trong MapReduce. Một stage được chia thành nhiều task bởi Spark runtime và thực thi song song trong partitions của RDD thông qua cluster. 
 
 Một Spark app có thể chạy một hoặc nhiều Spark job song song. 
@@ -279,3 +312,5 @@ Transformations là cốt lõi của việc biểu diễn logic nghiệp vụ c�
 * **Wide transformation:** là các phép biến đổi mà các phân vùng đầu vào đóng góp cho một số phân vùng đầu ra. Bạn thường sẽ nghe chúng được gọi là một sự hoán đổi nơi Spark sẽ trao đổi các phân vùng trên toàn cụm. Các hoạt động RDD như groupByKey, distinct và join có thể yêu cầu ánh xạ dữ liệu trên các phân vùng trong một RDD mới. Các phép biến đổi ánh xạ dữ liệu từ một đến nhiều phân vùng được gọi là các phép biến đổi rộng. 
 
 ### 4.5 Scheduling 
+
+![alt text](img30.png)
