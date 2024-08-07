@@ -79,7 +79,7 @@ Cả FS image và edit log đều nằm trên filesystem cục bộ của NameNo
 
 Một tệp trong hệ thống bao gồm một số khối. Các khối tạo thành một tệp không nằm trên cùng một Datanode mà thay vào đó được phân bố trên các Datanode khác nhau. Tại thời điểm khởi động, Namenode không biết vị trí của các khối dữ liệu của tệp. Nó xây dựng một bản đồ chứa vị trí của mỗi khối dữ liệu của mọi tệp từ các báo cáo định kỳ được gửi bởi Datanode. Mỗi Datanode xác định các bản sao khối trong sở hữu của nó với NameNode, bằng cách gửi một báo cáo khối. Namenode tính toán động bản đồ khối từ các báo cáo và duy trì nó trong bộ nhớ.
 
-Khi Namenode khởi động, nó chọn FS Image và áp dụng edit log để có được trạng thái mới nhất của metadata hệ thống tệp. Tiếp theo, Namenode ghi trạng thái HDFS mới vào FS Image và bắt đầu hoạt động bình thường với một tệp chỉnh sửa trống. Thời gian khởi động tỷ lệ thuận với kích thước của edit log. Điều này có thể gây ra vấn đề. Một edit log khổng lồ mất nhiều thời gian hơn để xử lý, do đó làm tăng thời gian khởi động cho Namenode. Namenode chỉ hợp nhất FS Image và edit log khi nó khởi động. Điều này có thể khiến edit log phát triển theo kích thước tùy ý theo thời gian. Để giảm thiểu vấn đề này, Hadoop có thể chạy một Secondary Namenode, được mô tả tiếp theo.
+Khi Namenode khởi động, nó chọn FS Image và áp dụng edit log để có được trạng thái mới nhất của metadata filesystem. Tiếp theo, Namenode ghi trạng thái HDFS mới vào FS Image và bắt đầu hoạt động bình thường với một tệp chỉnh sửa trống. Thời gian khởi động tỷ lệ thuận với kích thước của edit log. Điều này có thể gây ra vấn đề. Một edit log khổng lồ mất nhiều thời gian hơn để xử lý, do đó làm tăng thời gian khởi động cho Namenode. Namenode chỉ hợp nhất FS Image và edit log khi nó khởi động. Điều này có thể khiến edit log phát triển theo kích thước tùy ý theo thời gian. Để giảm thiểu vấn đề này, Hadoop có thể chạy một Secondary Namenode, được mô tả tiếp theo.
 
 #### 3.5.2 Secondary Namenode
 Secondary Namenode không phải là Namenode dự phòng.
@@ -92,14 +92,28 @@ Secondary Namenode định kỳ hợp nhất edit log với FS Image để edit 
 Với tầm quan trọng của Namenode, điều bắt buộc là phải làm cho nó có khả năng phục hồi lỗi. Có ba chiến lược được sử dụng để làm như vậy:
 
 * Sử dụng backups
-    Sao lưu các tệp metadata, đặc biệt là tệp Namespace Image và tệp edit log tạo nên trạng thái metadata của hệ thống tệp
+    Sao lưu các tệp metadata, đặc biệt là tệp Namespace Image và tệp edit log tạo nên trạng thái metadata của filesystem
 * Sử dụng Secondary Namenode
     Chạy một Secondary Namenode. Một Secondary Namenode duy trì một bản sao của FS Image, nhưng trạng thái của nó thường chậm hơn so với trạng thái chính. Trong trường hợp lỗi hoàn toàn của chính, mất dữ liệu là điều chắc chắn. Trong trường hợp đó, biện pháp khắc phục là sao chép các tệp metadata được sao lưu sang thư mục phụ và chạy nó dưới dạng chính.
 * Sử dụng Standby Namenode
 #### 3.5.3 High availability 
+##### 3.5.3.1 Standby Namenode
+- Trong trường hợp NameNode hay máy chủ cài đặt bị lỗi bất ngờ thì mọi hoạt động trong cụm sẽ dừng lại, không thể đọc ghi dữ liệu được nữa.
+- Nếu muốn nâng cấp hệ thống, phần cứng hoặc phần mềm trên máy chủ cài NameNode thì hệ thống cũng sẽ bị downtime.
 
+NameNode High Availability đã ra đời, theo đó trong cụm sẽ tồn tại 2 NameNode chạy đồng thời, 1 Active và 1 là Standby cho phép tăng khả năng chịu lỗi.
 
+Tại một thời điểm chỉ có một Active NameNode, NameNode này chịu trách nhiệm cho toàn bộ operations trong cụm và update metadata, Standby NameNode có nhiệm vụ đồng bộ metadata với Active NamNode, đảm bảo có thể thay thế vị trí của Active trong trường hợp NameNode này bị crash.
 
+Để thực hiện việc đồng bộ metadata giữa các NameNode, cả Active và Standby NameNode giao tiếp với một cụm Quorum Jounal Node (QJM) gồm nhiều Journal Node. Các hoạt động của client đều được Active NameNode cập nhật lại và ghi xuống editLogs ở các Journal Node, Standby NameNode sẽ đọc các thay đổi này và cập nhật metadata mới nhất
+
+Số lượng Journal Node trong một Quorum phải là số lẻ 3, 5 hoặc 7. Vì Active NameNode cần ghi xuống các Journal Node này và nếu có vấn đề gì với dữ liệu, các Journal Node sẽ vote với nhau tìm ra phiên bản chiếm đa số vote là dữ liệu đúng. Với việc sử dụng nhiều Journal Node cũng tránh việc biến nó trở thành điểm chết.
+
+Tại một thời điểm Journal Node chỉ cho phép một NameNode được quyền ghi, đó là Active NameNode, còn lại StandBy NameNode chỉ được quyền đọc. Các DataNode kết nối đến cả 2 NameNode và đồng thời báo cáo tình trạng cũng như thông tin block đến 2 NameNode
+##### 3.5.3.2 Zookeeper
+Việc implements automatic failover của NameNode dựa trên các lợi ích sau của Zookeeper:
+- Failure detection: cả 2 NameNode đều giữ một session trong Zookeeper. Nếu một Active NN fail, session này sẽ hết hạn và failover xảy ra.
+- Active NameNode election: Zookeeper cung cấp một cơ chế đơn giản cho việc chọn Active NN, nếu Active NN crash, Standby NN sẽ chiếm một lock đặc biệt trong Zookeeper ám chỉ nó sẽ là Active NN tiếp theo.
 ### 3.6 Datanode
 Datanode lưu trữ data thật sự. Nó lưu trữ các data block và gửi báo báo tới Namenode.
 
@@ -112,7 +126,7 @@ Datanode lưu trữ data thật sự. Nó lưu trữ các data block và gửi b
 Quá trình ghi bắt đầu khi một client khởi tạo quá trình. Client có thể là một ứng dụng sử dụng API Java hoặc một người làm việc với tiện ích dòng lệnh hdfs. Luồng tương tác giữa client và HDFS diễn ra như sau:
 
 * Client buffer data trên đĩa cục bộ ban đầu. Nó đợi cho đến khi một khối HDFS tích lũy dữ liệu trước khi liên hệ với Namenode.
-* Namenode, khi được client liên hệ, sẽ xác minh xem tệp đã tồn tại chưa và client có quyền cần thiết để tạo tệp đó hay không. Nếu các kiểm tra này vượt qua, Namenode sẽ thực hiện thay đổi tương ứng trong không gian tên của nó. Sau đó, nó trả về cho client một danh sách các Datanode để ghi. Các Datanode này lưu trữ các khối (và bản sao của chúng) tạo nên tệp.
+* Namenode, khi được client liên hệ, sẽ xác minh xem tệp đã tồn tại chưa và client có quyền cần thiết để tạo tệp đó hay không. Nếu các kiểm tra này vượt qua, Namenode sẽ thực hiện thay đổi tương ứng trong namespace của nó. Sau đó, nó trả về cho client một danh sách các Datanode để ghi. Các Datanode này lưu trữ các khối (và bản sao của chúng) tạo nên tệp.
 * Khi nhận được danh sách từ Namenode, client bắt đầu ghi vào Datanode đầu tiên.
 * Datanode đầu tiên nhận dữ liệu từ client theo từng phần. Nó nhận phần đầu tiên, ghi nó vào kho lưu trữ cục bộ của mình, sau đó bắt đầu chuyển phần đó đến Datanode thứ hai trong danh sách.
 * Datanode thứ hai nhận dữ liệu từ Datanode thứ nhất, ghi vào kho lưu trữ cục bộ của mình và bắt đầu chuyển phần đó đến Datanode thứ ba trong danh sách.

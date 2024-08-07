@@ -191,6 +191,13 @@ WHERE EXISTS (
 );
 
 ```
+
+```
+SELECT * 
+FROM orders o
+INNER JOIN customers c ON o.customerNumber = c.customerNumber 
+WHERE city = 'NYC';
+```
 ![alt text](img30.png)
 ![alt text](img32.png)
 ### 5.  Giới hạn kết quả
