@@ -1,16 +1,5 @@
-- Các command cơ bản: cd, ls, cp, mv, mkdir,cat,head
-- Các command liên quan đến quyền : chmod, chown, ls -l
-- Các command thực hiện song song:
-cat test.txt | wc -l
-cat test.txt | grep "a"
-cat test.txt | head
-echo "aabb"  > test.txt
-echo "cc" >> test.txt
-- Sử dụng vim: tạo file mới, sửa file, save,vvv
-- Quản lý tiến trình: htop, ps aux, kill -9
-
-## Command
-1.  cat: 
+## I. Command
+#### 1.  cat: 
 Cấu trúc cat command: `cat [OPTION] [FILE]`
 - Xem nội dung file: `cat filename.txt`
 hạn chế file quá lớn, `cat filename.txt|more`
@@ -19,47 +8,52 @@ hạn chế file quá lớn, `cat filename.txt|more`
 - Tổng hợp nhiều file thành một: `cat source1.txt source2.txt > destination.txt`
 - Hiển thị số dòng: option -n
 - Đánh số những dòng không trống: option -b
-2. head: in ra N dòng đầu tiên của tệp, giá trị mặc định của N là 10
-3. tail: in ra N dòng cuối cùng của tệp, giá trị mặc định của N là 10
-4. mkdir:  chưa tồn tại
+#### 2. head: in ra N dòng đầu tiên của tệp, giá trị mặc định của N là 10
+#### 3. tail: in ra N dòng cuối cùng của tệp, giá trị mặc định của N là 10
+#### 4. mkdir
 - tạo thư mục: `mkdir <path_name>`
 - tạo nhiều thư mục: `mkdir <path_name_1> <path_name_2> <path_name_3>`
 - tạo thư mục kèm thư mục cấp cha: `mkdir -p <path_name>`
     eg: `mkdir -p  /root/blogkdata_parent/blogkdata_dir`
 - hiển thị quá trình tạo thư mục: option "-v"
 
-5. cp: và thư mục từ đường dẫn nguồn sang đường dẫn đích
+#### 5. cp: và thư mục từ đường dẫn nguồn sang đường dẫn đích
 - sao chép tập tin: `cp source.txt  destination.txt`
 - sao chép tập tin vào thư mục : `cp source1.txt source2.txt source3.txt dest_directory/`
 - sao chép thư mục:` cp -R src_directory dest_directory`
-6. mv: di chuyển file hoặc thư mục
-7. rm: xóa file hoặc thư mục
-8. ls: lấy danh sách tất cả tập tin hoặc thư mục
+#### 6. mv: di chuyển file hoặc thư mục
+#### 7. rm: xóa file hoặc thư mục
+#### 8. ls: lấy danh sách tất cả tập tin hoặc thư mục
 	ls-l: hiển thị tệp hoặc thư mục, kích thước, ngày, thời gian đã sửa đổi, tên tệp hoặc tên thư mục và chủ sở hữu (owner) tệp và các quyền (permission).
 	ls-a: lấy danh sách các file kể cả file ẩn, tệp ẩn bắt đầu bằng ‘.’
-9. cd: thay đổi thư mục
+#### 9. cd: thay đổi thư mục
 - cd .. : về thư mục cha
 - cd ~ : thư mục home
 - cd - :  thư mục trước đó
 
 
-
-
-## Command liên quan đến quyền
+## II. Command liên quan đến quyền
+### Thay đổi quyền truy cập
 - Read (r): xem file.
 - Write (w): ghi, chỉnh sửa file hoặc đường dẫn.
 - Execute (x): thực thi file, xem đường dẫn.
     
 chmod : sửa đổi quyền truy cập của người dùng
+
+eg:
+
     `chmod +rwx filename` để thêm quyền
-    `chmod -rwx directoryname` để xóa bỏ quyền. 
+    `chmod -rwx directoryname` để xóa bỏ quyền.
     `chmod +x filename` cho phép quyền thực thi.
     `chmod -wx filename` xóa quyền ghi, thực thi.
 
 Có 3 nhóm cho sự phân quyền
-- owners: these permissions will only apply to owners and will not affect other groups.
-- groups: you can assign a group of users specific permissions, which will only impact users within the group.
-- all users: these permissions will apply to all users, and as a result, they present the greatest security risk and should be assigned with caution.
+
+* **Chủ sở hữu (owners):** Những quyền hạn này chỉ áp dụng cho chủ sở hữu và không ảnh hưởng đến các nhóm khác.
+* **Nhóm (groups):** Bạn có thể gán quyền hạn cụ thể cho một nhóm người dùng, điều này chỉ ảnh hưởng đến những người dùng trong nhóm đó.
+* **Tất cả người dùng (all users):** Những quyền hạn này áp dụng cho tất cả người dùng và do đó, chúng tiềm ẩn rủi ro bảo mật cao nhất và nên được gán một cách thận trọng.
+
+**_Cách 1_**
 ```
 Octal Value           Protection mechanism
    400                   Read by owner
@@ -73,44 +67,69 @@ Octal Value           Protection mechanism
    001                   Execute (search) by others
 
 ```
-  
-     chmod g+w filename
+eg:
+`chmod 664 funny` , `chmod 700 campbell`, ... 
 
-    chmod g-wx filename
+**_Cách 2_**
 
-    chmod o+w filename
+Để thay đổi quyền truy cập thư mục cho mọi người, sử dụng:
 
-    chmod o-rwx foldername
+* **u** cho người dùng (user)
+* **g** cho nhóm (group)
+* **o** cho người khác (others)
+* **ugo** hoặc **a** (cho tất cả)
+```
+  chmod g+w filename
 
+  chmod g-wx filename
 
+  chmod o+w filename
 
-To change directory permissions for everyone, use “u” for users, “g” for group, “o” for others, and “ugo” or “a” (for all).
+  chmod o-rwx foldername
+```
 
-    chmod ugo+rwx foldername to give read, write, and execute to everyone.
+eg:
+* **chmod ugo+rwx foldername:** Cấp quyền đọc, viết và thực thi cho mọi người đối với thư mục.
+* **chmod a+r foldername:** Chỉ cấp quyền đọc cho mọi người đối với thư mục.
 
-    chmod a=r foldername to give only read permission for everyone.
+### Thay đổi chủ sở hữu
+Thay đổi chủ sở hữu của file hoặc thư mục
 
+* **chown:** Thay đổi chủ sở hữu của file hoặc thư mục.
+    * **chown name filename:** Thay đổi chủ sở hữu của file thành "name".
+    * **chown name foldername:** Thay đổi chủ sở hữu của thư mục thành "name".
 
-- chown: thay đổi chủ sở hữu của file 
-
-    chown name filename
-    chown name foldername
-    
-
-These commands will give ownership to someone, but all sub files and directories still belong to the original owner.
-
-You can also combine the group and ownership command by using:
-
-    chown -R name:filename /home/name/directoryname
-## Operator
-- & 
-chạy các command song song, gần như là đồng thời
-- wait with &
-- ;
-- |
+Các lệnh này chỉ thay đổi chủ sở hữu của file hoặc thư mục gốc, các file và thư mục con vẫn thuộc về chủ sở hữu cũ.
 
 
-## Quản lý tiến trình: 
+## III. Operator
+1. & 
+
+    chạy các command song song, gần như là đồng thời
+`~$ command1 & command2…`
+2. wait with & (& :)
+
+```
+~$ command1 & : command2
+.
+.
+.
+command3
+```
+3. ;
+
+`~$ command 1; command2;.....`
+
+4. |
+   
+Được sử dụng để kết nối đầu ra của một lệnh với đầu vào của lệnh khác
+
+   `~$ command 1 | command 2 | command 3….`
+
+5. Lệnh redirection (>` và >>)
+   được sử dụng để ghi đầu ra của lệnh vào file.
+
+## IV. Quản lý tiến trình: 
 - top: tìm hiểu những quy trình nào đang chạy trên server 
 - htop: cải tiến của top, có sẵn trong repository t
 - ps: hiển thị thông tin về tất cả các tiến trình đang chạy trên hệ thống với PID (Process ID) và thông tin khác
@@ -214,7 +233,6 @@ hoặc
 `pgrep httpd`
 
 
-
 Khi bạn có các PID, sử dụng lệnh kill để chấm dứt chúng.
 
 `kill -9 PID1 PID2 PID3`
@@ -249,7 +267,7 @@ ps -aux | grep mysql
 
 Các công cụ giám sát hệ thống đồ họa trên Linux như htop hoặc gnome-system-monitor cung cấp giao diện thân thiện với người dùng để tìm và chấm dứt các tiến trình.
 
-## Vim
+## V. Vim
 ### Mở file với VIM
 
 Cú pháp
@@ -279,9 +297,11 @@ Các lệnh sau cho phép bạn chèn và thêm văn bản. Mỗi lệnh này đ
 |   |  :q | Thoát VIM                    |
 | * | :q! | Thoát VIM và không lưu.      |
 
-## Docker
+## VI. Docker
 
 Docker là một nền tảng để cung cấp cách để building, deploying và running ứng dụng dễ dàng hơn bằng cách sử dụng các containers (trên nền tảng ảo hóa)
+
+![img.png](img.png)
 
 - Docker Engine : là thành phần chính của Docker, như một công cụ để đóng gói ứng dụng
 - Docker Hub : là một “github for docker images”. Trên DockerHub có hàng ngàn public images được tạo bởi cộng đồng cho phép bạn dễ dàng tìm thấy những image mà bạn cần. Và chỉ cần pull về và sử dụng với một số config mà bạn mong muốn.
@@ -292,14 +312,16 @@ Docker là một nền tảng để cung cấp cách để building, deploying v
 - Dockerfile: là một tập tin bao gồm các chỉ dẫn để build một image .
 - Volumes: là phần dữ liệu được tạo ra khi container được khởi tạo.
 
-Build
+![img_1.png](img_1.png)
+
+#### Build
 
 Đầu tiên tạo một dockerfile, trong dockerfile này chính là code của chúng ta. Dockerfile này sẽ được Build tại một máy tính đã cài đặt Docker Engine. Sau khi build ta sẽ có được Container, trong Container này chứa ứng dụng kèm bộ thư viện của chúng ta.
-Push
+#### Push
 
 Sau khi có được Container, chúng ta thực hiện push Container này lên cloud và lưu tại đó.
 
-Pull, Run
+#### Pull, Run
 
 Nếu một máy tính khác muốn sử dụng Container chúng ta thì bắt buộc máy phải thực hiện việc Pull container này về máy, tất nhiên máy này cũng phải cài Docker Engine. Sau đó thực hiện Run Container này.
 

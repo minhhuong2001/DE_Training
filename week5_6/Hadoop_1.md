@@ -1,25 +1,34 @@
-(1) Dữ liệu lớn và Hadoop ecosystem, khai niệm cơ bản về hdfs, yarn, spark
-(2) Quá trình đọc ghi trong hdfs, khái niệm namenode, datanode, secondary namenode, hdfs block, block
-replication, 
-(3) Các thành phần của yarn, khái niệm về mapreduce
-(4) Các thành phần của spark, spark api(action, tranformation), 
+
 # Data
-types
+### types
 
-![alt text](img1.png)
+![img.png](img.png)
 
-Unstructured: video, audio
-Structured data: sql, 
-Semi-Structured: json, xml
+- Unstructured Data (Dữ liệu phi cấu trúc)
 
-dbms
+  eg: video, audio
+- Structured Data (Dữ liệu có cấu trúc)
 
+  eg: sql,
+  - Semi-Structured Data (Dữ liệu bán cấu trúc)
+  eg: json, xml
+
+
+### big data
 ![alt text](img2.png)
 
-big data
-data warehouse
+Khối lượng lớn (Volume): Lượng dữ liệu khổng lồ, vượt quá khả năng xử lý của các hệ thống truyền thống.
+
+Tốc độ cao (Velocity): Dữ liệu được tạo ra và xử lý với tốc độ rất nhanh, gần như thời gian thực.
+
+Đa dạng (Variety): Dữ liệu có nhiều loại hình khác nhau, bao gồm cả dữ liệu có cấu trúc, không cấu trúc và bán cấu trúc.
+
+### data warehouse
+Kho dữ liệu (Data Warehouse) là một hệ thống lưu trữ dữ liệu tích hợp, có tổ chức và định hướng theo chủ đề, được xây dựng từ nhiều nguồn dữ liệu khác nhau của một tổ chức. Dữ liệu trong kho được chuẩn hóa, tích hợp và lưu trữ một cách nhất quán, giúp hỗ trợ quá trình phân tích và ra quyết định của doanh nghiệp.
 
 ![alt text](img3.png)
+
+ETL (Extract, Transform, Load): Quá trình trích xuất, biến đổi và tải dữ liệu từ các nguồn vào kho.
 
 # Hadoop
 Apache Hadoop là một framework mã nguồn mở nhằm mục đích giúp tương tác với dữ liệu lớn dễ dàng hơn.

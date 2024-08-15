@@ -214,61 +214,8 @@ RDD viết tắt của Resilient Distributed Datasets. Hãy khám phá từng th
 * **Distributed:** có nghĩa là dữ liệu tạo thành một RDD được phân tán trên một cụm máy.
 * **Datasets:** đề cập đến các biểu diễn của các bản ghi dữ liệu mà chúng tôi làm việc cùng. Dữ liệu bên ngoài có thể được tải bằng cách sử dụng nhiều nguồn khác nhau như tệp JSON, tệp CSV, tệp văn bản hoặc cơ sở dữ liệu thông qua JDBC.
 
-RDD Spark có thể được lưu trong bộ nhớ cache và phân vùng thủ công. Lưu trong bộ nhớ cache rất hữu ích vì nó cho phép sử dụng lại RDD nhiều lần. Phân vùng thủ công giúp cân bằng các phân vùng chính xác. Tiếp theo, chúng ta sẽ chuyển sang mã và xem một vài ví dụ về tạo RDD.
+RDD Spark có thể được lưu trong bộ nhớ cache và phân vùng thủ công. Lưu trong bộ nhớ cache rất hữu ích vì nó cho phép sử dụng lại RDD nhiều lần. Phân vùng thủ công giúp cân bằng các phân vùng chính xác. 
 
-***Tạo RDD từ local collection***
-Tạo RDD từ collection có sẵn sử dụng phương thức `parallelize()` từ `SparkContext`
-```
-// Create a local list
-val brands = List("Tesla", "Ford", "GM")
-
-// Create a distributed dataset from the local list as an RDD
-val brandsRDD = sc.parallelize(brands)
-```
-***Tạo RDD từ data source***
-```
-// Create a RDD by reading a file from the local filesystem
-val data = sc.textFile("/DataJek/cars.data")
-
-// Print the count of the number of records in the RDD in spark-shell console
-data.count
-
-```
-***Tạo RDD từ DataFrames & Datasets***
-```
-val dataFrame = spark.range(100).toDF()
-
-// Create a RDD from the DataFrame
-val rdd = dataFrame.rdd
-
-// Inspect the number of records in the rdd
-rdd.count
-```
-
-```
-// Start spark shell
-spark-shell
-
-// Create RDD from List
-val brands = List("Tesla", "Ford", "GM")
-val brandsRDD = sc.parallelize(brands)
-brandsRDD.count
-
-
-// Create RDD from files 
-val data = sc.textFile("file:///DataJek/cars.data")
-data.count
-
-// Read the text file as a single record
-val data = sc.wholeTextFiles("file:///DataJek/cars.data")
-data.count
-
-// Create RDD from Dataframe
-val dataFrame = spark.range(100).toDF()
-val rdd = dataFrame.rdd
-rdd.count
-
-```
 
 #### 4.3.2  DataFramesDataset
 
@@ -281,17 +228,6 @@ Một schema xác định tên cột và kiểu của một DataFrame. Một sch
 
 Spark sử dụng một công cụ gọi là ***Catalyst*** để duy trì thông tin kiểu. Các kiểu Spark ánh xạ với các kiểu tương ứng trong các ngôn ngữ được hỗ trợ (Java, Python, v.v.). Spark sẽ chuyển đổi một biểu thức được viết bằng một trong các ngôn ngữ được hỗ trợ thành một biểu diễn Catalyst tương đương cho cùng một kiểu. Công cụ Catalyst áp dụng một số tối ưu hóa và liên tục được cải thiện để thực hiện nhanh hơn.
 
-***working with DataFrames***
-```
-// Start spark shell
-spark-shell
-
-// Read in data
-val df = spark.read.option("inferSchema", true).option("header", false).text("file:///DataJek/cars.data")
-
-// Examine schema
-df.schema
-```
 
 #### 4.3.3 Dataset
 Một Dataset là một collection các đối tượng strongly-typed, bất biến được map tới một relational schema. Datasets là một type-safe structured API có sẵn trong các ngôn ngữ được hỗ trợ bởi Spark là Java và Scala được gõ tĩnh.
